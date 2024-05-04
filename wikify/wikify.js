@@ -40,10 +40,23 @@
     async function getWikiText(uris) {
 
         const rawUri = uris[0];
-        const uri = rawUri.split(":")[2]
-        const artistName = await CosmosAsync.get(`https://api.spotify.com/v1/artists/${uri}`)
-        const artistNameTrimmed = (artistName.name).replace(/\s/g, "%20");
+        const uriSplit = rawUri.split(":");
+        const uriType = uriSplit[1];
+        const uri = uriSplit[2];
+        let artistName = undefined;
+        
+        //This assumes that the `View Wiki` option is only available for artists and tracks
+        if (uriType === "artist") {
+            const artistObject = await CosmosAsync.get(`https://api.spotify.com/v1/artists/${uri}`);
+            artistName = artistObject.name;
+        } else if (uriType === "track") {
+            const trackObject = await CosmosAsync.get(`https://api.spotify.com/v1/tracks/${uri}`);
+            artistName = trackObject.artists[0].name;
+        }
 
+        const artistNameTrimmed = (artistName).replace(/\s/g, "%20");
+
+        //TODO: search up individual songs too, not just the artist of the song
         if (artistName != null) {
             try {
                 const wikiInfo = await CosmosAsync.get(`https://${lang}.wikipedia.org/w/api.php?action=query&format=json&prop=extracts%7Cdescription&titles=${artistNameTrimmed}`)
