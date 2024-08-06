@@ -1,3 +1,6 @@
+Maintaining my own version, due to the author archiving the project.
+Will update as the extensions I am using break.
+
 # spicetify-extensions
 
 ## [Song-Stats:](./songstats/README.md)
